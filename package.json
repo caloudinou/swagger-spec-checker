@@ -1,6 +1,6 @@
 {
   "name": "swagger-spec-checker",
-  "version": "1.0.0",
+  "version": "1.0.5",
   "description": "validator swagger payload",
   "main": "index.js",
   "type": "module",

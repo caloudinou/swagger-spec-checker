@@ -3,12 +3,12 @@
 import swaggerJSDoc from 'swagger-jsdoc'
 import swaggerModelValidator from 'swagger-model-validator'
 
-import { ErrorValidateModel } from './errors.js'
+import { ErrorValidateModel } from './errors-midleware-jsend.js'
 
 /**
  * initialize swagger-jsdoc
  */
-export class SwaggerSpecChecker {
+export class Core {
     /**
      * @constructor
      * @param {String[]|undefined|null} swaggerYamlPaths - Array of string with end line .yml or .yaml
