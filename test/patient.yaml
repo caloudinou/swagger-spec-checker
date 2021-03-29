@@ -1,0 +1,154 @@
+swagger: "2.0"
+info:
+  title: "TEST API"
+  version: "1.0.0"
+  description: The API for managing TEST.
+schemes:
+  - "http"
+basePath: "/v1"
+securityDefinitions:
+  Bearer:
+    type: apiKey
+    name: Authorization
+    in: header
+produces:
+  - "application/json"
+definitions:
+  SaveTestPayload:
+    type: "object"
+    required:
+      - user_id
+      - accepted
+    properties:
+      user_id:
+        type: string
+        format: uuid
+      accepted:
+        type: boolean
+  TestActionResponse:
+    type: object
+    required:
+      - program
+      - version
+      - release
+      - datetime
+      - data
+      - status
+      - message
+      - timestamp
+      - code
+    properties:
+      program:
+        type: string
+      version:
+        type: string
+      release:
+        type: integer
+      datetime:
+        type: string
+        format: date
+      timestamp:
+        type: integer
+      code:
+        type: integer
+      status:
+        type: string
+        enum:
+          - success
+          - error
+      message:
+        type: string
+      data:
+        $ref: "#/definitions/TestActionResponse"
+  TestAction:
+    type: object
+    required:
+      - id
+      - date
+      - user_id
+      - accepted
+    properties:
+      id:
+        type: string
+        format: uuid
+      date:
+        type: string
+        format: date
+      user_id:
+        type: string
+        format: uuid
+      accepted:
+        type: boolean
+  Error:
+    type: object
+    properties:
+      status:
+        type: number
+      message:
+        type: string
+paths:
+  /user/test/action:
+    get:
+      security:
+        - Bearer: [ ]
+      tags:
+        - "test"
+      summary: user test just today .
+      parameters:
+        - in: "query"
+          name: "user_id"
+          description: "User ID"
+          required: true
+          type: "string"
+      responses:
+        200:
+          description: test accepted.
+          schema:
+            $ref: "#/definitions/TestActionResponse"
+        401:
+          description: Authentication required.
+          schema:
+            $ref: "#/definitions/Error"
+        400:
+          description: Invalid data
+          schema:
+            $ref: "#/definitions/Error"
+        404:
+          description: 'no test today'
+          schema:
+            $ref: "#/definitions/Error"
+        500:
+          description: |
+            Internal Server Error: An unexpected error occurred.
+    post:
+      security:
+        - Bearer: [ ]
+      tags:
+        - "test"
+      summary: user test.
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "test data"
+          schema:
+            $ref: "#/definitions/SaveTestPayload"
+      responses:
+        202:
+          description: test has been created.
+          schema:
+            $ref: "#/definitions/TestActionResponse"
+        401:
+          description: Authentication required.
+          schema:
+            $ref: "#/definitions/Error"
+        400:
+          description: Invalid data
+          schema:
+            $ref: "#/definitions/Error"
+        409:
+          description: Invalid data
+          schema:
+            $ref: "#/definitions/Error"
+        500:
+          description: |
+            Internal Server Error: An unexpected error occurred.

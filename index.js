@@ -1,7 +1,7 @@
-import { ErrorValidateModel } from './src/errors-midleware-jsend.js'
-import { Core } from './src/core.js'
+import { ErrorValidateModel } from './src/error.js'
 import swaggerUi from 'swagger-ui-express'
+import { documentationSwaggerYAMLs } from './src/swagger.js'
 
-export const SwaggerSpec = Core
+export const SwaggerDocumentation = documentationSwaggerYAMLs
 export const SwaggerErrorValidateModel = ErrorValidateModel
 export const SwaggerUi = swaggerUi
