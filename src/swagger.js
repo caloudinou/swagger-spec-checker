@@ -1,6 +1,6 @@
 import Validator from 'swagger-model-validator'
 import YAML from 'yamljs'
-import { ErrorValidateModel } from './error.js'
+import { ErrorDocumentNotFound, ErrorDocumentOverride, ErrorValidateModel } from './error.js'
 import { overrideInformation } from './override-information.js'
 
 
@@ -12,42 +12,58 @@ import { overrideInformation } from './override-information.js'
  */
 const getYAMLs = function (swaggerYamlPaths) {
   return Array.isArray(swaggerYamlPaths)
-      ? swaggerYamlPaths.filter(pathSwaggerYml => /.(yaml|yml)$/.test(pathSwaggerYml))
-      : ['**/*.yaml']
+    ? swaggerYamlPaths.filter(pathSwaggerYml => /.(yaml|yml)$/.test(pathSwaggerYml))
+    : ['**/*.yaml']
 }
 
 /**
  * documentationSwaggerYAMLs
- * @param swaggerYamlPaths
- * @param config
+ * @param {string[]|null|undefined}swaggerYamlPaths
+ * @param {{
+ * version: string|undefined,
+ * name: string|undefined,
+ * description: string|undefined,
+ * host: string|undefined
+ * }|null|undefined} info
  * @returns {[]}
  */
 export const documentationSwaggerYAMLs = (swaggerYamlPaths, info) => {
-  const swagger = []
+  const swaggers = []
 
   for (let swaggerYamlPath of getYAMLs(swaggerYamlPaths)) {
-    swagger.push(overrideInformation(documentationSwaggerYAML(swaggerYamlPath), info))
+    const swaggerYaml = documentationSwaggerYAML(swaggerYamlPath)
+    if (!swaggerYaml) {
+      throw new ErrorDocumentNotFound(swaggerYamlPath)
+    }
+    const swaggerOverride = overrideInformation(swaggerYaml, info)
+    if (!swaggerOverride) {
+      throw new ErrorDocumentOverride(swaggerOverride)
+    }
+
+    swaggers.push(swaggerOverride)
   }
 
-  return swagger
+  return swaggers
 }
 
 /**
  * documentationSwaggerYAML
  * @param swaggerYamlPath
- * @param config
  * @returns {{swaggerDocument: *, validator: Validator, validateModel: (function(*=, *=): Promise<boolean|ErrorValidateModel>)}}
  */
 export const documentationSwaggerYAML = (swaggerYamlPath) => {
-    const swaggerDocument = YAML.load(swaggerYamlPath)
-    const validator = new Validator(swaggerDocument)
+  const swaggerDocument = YAML.load(swaggerYamlPath)
+  const validator = new Validator(swaggerDocument)
 
-    return {
-      swaggerDocument,
-      validator,
-      validateModel: (name, model) => {
-          const { valid, errors } = swaggerDocument.validateModel(name, model, false, true)
-          return { valid, error:  new ErrorValidateModel(errors) }
+  return {
+    swaggerDocument,
+    validator,
+    validateModel: (name, model) => {
+      const { valid, errors } = swaggerDocument.validateModel(name, model, false, true)
+      if (valid) {
+        return null
       }
+      return new ErrorValidateModel(errors)
     }
+  }
 }

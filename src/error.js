@@ -16,3 +16,23 @@ export class ErrorValidateModel extends Error {
             : (errors ? [errors] : [])
     }
 }
+
+export class ErrorDocumentNotFound extends Error {
+    constructor (errorPath) {
+      super()
+      this.name
+      this.code = 404
+      this.message = 'Document not found'
+      this.errors = `${this.message} ${errorPath}`
+    }
+}
+
+export class ErrorDocumentOverride extends Error {
+  constructor (errorPath) {
+    super()
+    this.name
+    this.code = 409
+    this.message = 'conflict override'
+    this.errors = `${this.message} ${errorPath}`
+  }
+}
