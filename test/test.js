@@ -20,4 +20,6 @@ test('nominal', t => {
   t.is( res.swaggerDocument.info.version, swagger.projectInfo.version );
   t.is( res.swaggerDocument.host, swagger.projectInfo.host );
   t.is( res.swaggerDocument.basePath, '/v1' );
+  const resval = res.validateModel("SaveTestPayload", {user_id: "toto", accepted: true})
+  t.is(resval, null)
 });

@@ -22,7 +22,6 @@ definitions:
     properties:
       user_id:
         type: string
-        format: uuid
       accepted:
         type: boolean
   TestActionResponse:
